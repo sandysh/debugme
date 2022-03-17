@@ -89,3 +89,6 @@ class Debugme
     }
 
 }
+
+$debugMe = new Debugme();
+$debugMe->boot();
