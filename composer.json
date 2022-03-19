@@ -26,7 +26,8 @@
     "autoload": {
         "psr-4": {
             "Sandysh\\Debugme\\": "src"
-        }
+        },
+        "files": ["src/Debugme.php"]
     },
     "autoload-dev": {
         "psr-4": {

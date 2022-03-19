@@ -2,54 +2,30 @@
 
 namespace Sandysh\Debugme;
 
-use Illuminate\Support\Facades\Route;
 
 class Debugme
 {
 
-    public static function boot()
+    public function boot()
     {
-        $debugMode = env('DEBUG_ME');
-        $debugRoutes = env('DEBUG_ROUTES');
-        $debugUrls = env('DEBUG_URLS');
-        $debugIps = env('DEBUG_IPS');
+        $this->debugMode = env('DEBUG_ME');
+        $this->debugUrls = env('DEBUG_URLS');
+        $this->debugIps = env('DEBUG_IPS');
 
-        if ($debugMode) {
-            if (self::checkIfIsDefined('debugIps')) {
-               self::processIps($debugIps);
-            } if (self::checkIfIsDefined('DEBUG_ROUTES')) {
-                self::processRoutes($debugRoutes);
-            } if (self::checkIfIsDefined('DEBUG_URLS')) {
-                self::processUrls($debugUrls);
+        if ($this->debugMode) {
+            if ($this->checkIfIsDefined('debugIps')) {
+               $this->processIps();
+            } else {
+                $this->processUrls();
             }
         }
     }
 
-    public function setVariables()
-    {
-        $this->debugMode = env('DEBUG_ME');
-        $this->debugRoutes = env('DEBUG_ROUTES');
-        $this->debugUrls = env('DEBUG_URLS');
-        $this->debugIps = env('DEBUG_IPS');
-    }
-
-
     public function checkIfIsDefined($var)
     {
-        if ($var !== "" ) {
-            return true;
-        }
-    }
-    public function checkIfRoutesIsDefined()
-    {
-        if ($this->debugRoutes !== "" ) {
-            return true;
-        }
-    }
-    public function checkIfUrlsIsDefined()
-    {
-        if ($this->debugRoutes !== "" ) {
-            return true;
+        switch($var) {
+            case 'debugIps': if($this->debugIps !== "") return true;
+            case 'debugUrls': if ($this->debugUrls !== "") return true;
         }
     }
 
@@ -59,36 +35,26 @@ class Debugme
     }
 
 
-    public function processRoutes($debugRoutes)
-    {
-        $currentRoute = request()->route()->getName();
-        $fragments =  explode(',',$debugRoutes);
-        if (in_array($currentRoute, $fragments)) {
-            self::setDebugTrue();
-        }
-    }
-
-    public function processUrls($debugUrls)
+    public function processUrls()
     {
         $segments = request()->segments();
-        $fragments =  explode(',',$debugUrls);
+        $fragments =  explode(',',$this->debugUrls);
         if (array_intersect($segments, $fragments)) {
-            self::setDebugTrue();
+            $this->setDebugTrue();
         }
     }
 
-    public function processIps($debugIps)
+    public function processIps()
     {
-        $clientIps = request()->ips();
-        if ($debugIps !== "" ) {
-            $fragments =  explode(',',$debugIps);
-            if (!array_intersect($clientIps, $fragments)) {
-                return;
-            }
+        $clientIp = trim(shell_exec("dig +short myip.opendns.com @resolver1.opendns.com"));
+        if ($this->debugIps !== "" ) {
+            $fragments =  explode(',',$this->debugIps);
+            if (in_array($clientIp, $fragments)) {
+                $this->processUrls();
+            } 
+        } else {
+            $this->setDebugTrue();
         }
     }
 
 }
-
-$debugMe = new Debugme();
-$debugMe->boot();

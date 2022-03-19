@@ -11,7 +11,7 @@ class DebugmeServiceProvider extends ServiceProvider
     /**
      * Bootstrap the application services.
      */
-    public function boot()
+    public function boot(Debugme $debugme)
     {
         /*
          * Optional methods to load your package assets
@@ -44,6 +44,8 @@ class DebugmeServiceProvider extends ServiceProvider
             // Registering package commands.
             // $this->commands([]);
         }
+
+        $debugme->boot();
     }
 
     /**
