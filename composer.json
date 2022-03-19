@@ -3,7 +3,13 @@
     "description": "Enable debugging based on routes and ip",
     "keywords": [
         "sandysh",
-        "debugme"
+        "debugme",
+        "laravel",
+        "debugger",
+        "url-based",
+        "ip-based",
+        "prod-debug"
+
     ],
     "homepage": "https://github.com/sandysh/debugme",
     "license": "MIT",
